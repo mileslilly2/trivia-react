@@ -15,24 +15,28 @@ const DIFFICULTIES = ["easy", "medium", "hard"];
 
 export default function TriviaApp() {
   const [token, setToken] = useState("");
-  const [playerName, setPlayerName] = useState("");
-  const [nameEntered, setNameEntered] = useState(false);
 
+  // Multiplayer state
+  const [players, setPlayers] = useState([]);
+  const [currentPlayerIndex, setCurrentPlayerIndex] = useState(0);
+  const [nameInput, setNameInput] = useState("");
+  const [gameStarted, setGameStarted] = useState(false);
+
+  // Game settings
   const [selectedCategory, setSelectedCategory] = useState(CATEGORIES[0].id);
   const [selectedDifficulty, setSelectedDifficulty] = useState(DIFFICULTIES[0]);
   const [questionsPerRound, setQuestionsPerRound] = useState(5);
   const [totalRounds, setTotalRounds] = useState(1);
 
+  // Question state
   const [questions, setQuestions] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
-
   const [question, setQuestion] = useState("");
   const [correctAnswer, setCorrectAnswer] = useState("");
   const [shuffledAnswers, setShuffledAnswers] = useState([]);
   const [feedback, setFeedback] = useState("");
   const [showNext, setShowNext] = useState(false);
 
-  const [score, setScore] = useState(0);
   const [currentRound, setCurrentRound] = useState(1);
   const [gameOver, setGameOver] = useState(false);
 
@@ -66,7 +70,7 @@ export default function TriviaApp() {
       alert("All available questions have been used. Resetting token...");
       await resetToken();
       setCurrentRound(1);
-      setScore(0);
+      setPlayers(players.map((p) => ({ ...p, score: 0 })));
     }
   };
 
@@ -83,95 +87,81 @@ export default function TriviaApp() {
   };
 
   const checkAnswer = (selected) => {
+    let newPlayers = [...players];
+
     if (selected === correctAnswer) {
-      setFeedback("✅ Correct!");
-      setScore((prev) => prev + 1);
+      setFeedback(`✅ Correct!`);
+      newPlayers[currentPlayerIndex].score += 1;
     } else {
       setFeedback(`❌ Wrong! Correct: ${correctAnswer}`);
     }
+
+    setPlayers(newPlayers);
     setShowNext(true);
   };
 
   const nextQuestion = () => {
-    const next = currentIndex + 1;
-    setCurrentIndex(next);
-    if (next < questions.length) {
-      loadQuestion(questions, next);
+    const nextIndex = currentIndex + 1;
+    if (nextIndex < questions.length) {
+      setCurrentIndex(nextIndex);
+      loadQuestion(questions, nextIndex);
+      setCurrentPlayerIndex((prev) => (prev + 1) % players.length);
     } else {
       if (currentRound < totalRounds) {
-        setCurrentRound((r) => r + 1);
+        setCurrentRound(currentRound + 1);
         fetchQuestions();
       } else {
         setGameOver(true);
-        resetToken(); // token reset at end of game
+        resetToken();
       }
     }
   };
 
-  const startGame = () => {
-    setScore(0);
-    setCurrentRound(1);
-    setGameOver(false);
-    fetchQuestions();
+  const addPlayer = () => {
+    if (nameInput.trim()) {
+      setPlayers([...players, { name: nameInput.trim(), score: 0 }]);
+      setNameInput("");
+    }
   };
 
-  const handleNameSubmit = () => {
-    if (playerName.trim()) {
-      setNameEntered(true);
+  const startGame = () => {
+    if (players.length < 2) {
+      alert("You need at least two players to start.");
+      return;
     }
+    setGameStarted(true);
+    setCurrentPlayerIndex(0);
+    fetchQuestions();
   };
 
   return (
     <div className="trivia-container">
-      <h1 className="title">Kahoot-Style Trivia</h1>
+      <h1 className="title">Multiplayer Trivia</h1>
 
-      {/* Name entry */}
-      {!nameEntered && (
+      {!gameStarted && (
         <div className="name-entry">
           <input
             type="text"
-            placeholder="Enter your name"
-            value={playerName}
-            onChange={(e) => setPlayerName(e.target.value)}
+            placeholder="Enter player name"
+            value={nameInput}
+            onChange={(e) => setNameInput(e.target.value)}
           />
-          <button onClick={handleNameSubmit}>Continue</button>
-        </div>
-      )}
+          <button onClick={addPlayer}>Add Player</button>
 
-      {/* Game Setup */}
-      {nameEntered && !question && !gameOver && (
-        <div className="settings">
-          <select value={selectedCategory} onChange={(e) => setSelectedCategory(e.target.value)}>
-            {CATEGORIES.map((cat) => (
-              <option key={cat.id} value={cat.id}>{cat.name}</option>
+          <h3>Players:</h3>
+          <ul>
+            {players.map((p, i) => (
+              <li key={i}>{p.name}</li>
             ))}
-          </select>
-
-          <select value={selectedDifficulty} onChange={(e) => setSelectedDifficulty(e.target.value)}>
-            {DIFFICULTIES.map((diff) => (
-              <option key={diff} value={diff}>{diff}</option>
-            ))}
-          </select>
-
-          <select value={questionsPerRound} onChange={(e) => setQuestionsPerRound(Number(e.target.value))}>
-            {[3, 5, 10, 15].map((n) => (
-              <option key={n} value={n}>{n} Questions</option>
-            ))}
-          </select>
-
-          <select value={totalRounds} onChange={(e) => setTotalRounds(Number(e.target.value))}>
-            {[1, 2, 3, 5].map((r) => (
-              <option key={r} value={r}>{r} Rounds</option>
-            ))}
-          </select>
+          </ul>
 
           <button className="start-btn" onClick={startGame}>Start Game</button>
         </div>
       )}
 
-      {/* Active Question */}
-      {question && !gameOver && (
+      {gameStarted && question && !gameOver && (
         <div className="question-box">
+          <h2>{players[currentPlayerIndex].name}'s Turn</h2>
           <h2 dangerouslySetInnerHTML={{ __html: question }} className="question-text" />
           <div className="answer-grid">
             {shuffledAnswers.map((answer, i) => (
@@ -189,21 +179,18 @@ export default function TriviaApp() {
         </div>
       )}
 
-      {/* Final Scoreboard */}
       {gameOver && (
         <div className="scoreboard">
           <h2>🎉 Game Over!</h2>
-          <p>Player: <strong>{playerName}</strong></p>
-          <p>Rounds Completed: {totalRounds}</p>
-          <p>Final Score: {score} / {totalRounds * questionsPerRound}</p>
-          <button onClick={() => setGameOver(false)}>Play Again</button>
-        </div>
-      )}
-
-      {/* Score display */}
-      {!gameOver && nameEntered && (
-        <div className="score-box">
-          Round {currentRound}/{totalRounds} | Score: {score}
+          <h3>Final Scores:</h3>
+          <ul>
+            {players.map((p, i) => (
+              <li key={i}>
+                {p.name}: <strong>{p.score}</strong> points
+              </li>
+            ))}
+          </ul>
+          <button onClick={() => window.location.reload()}>Play Again</button>
         </div>
       )}
     </div>
