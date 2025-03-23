@@ -1,19 +1,19 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "dc86609ab05032c7c55bbbf54c0eadc6",
+    "revision": "5cfc42133bf13fe0e38f4c98bf4a081d",
     "url": "/trivia-react/index.html"
   },
   {
-    "revision": "b786b0bb62cc99388825",
+    "revision": "f5272efb3f0fd0b97bf0",
     "url": "/trivia-react/static/css/main.915a252e.chunk.css"
   },
   {
-    "revision": "638e200e69d950262938",
-    "url": "/trivia-react/static/js/2.ae026ab9.chunk.js"
+    "revision": "035b70f02c6d1287407a",
+    "url": "/trivia-react/static/js/2.352817b3.chunk.js"
   },
   {
-    "revision": "b786b0bb62cc99388825",
-    "url": "/trivia-react/static/js/main.1df5ea49.chunk.js"
+    "revision": "f5272efb3f0fd0b97bf0",
+    "url": "/trivia-react/static/js/main.e99ee5b7.chunk.js"
   },
   {
     "revision": "363ee4982c5f28a3f23d",
