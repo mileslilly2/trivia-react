@@ -4,7 +4,7 @@ import { io } from "socket.io-client";
 import "./TriviaApp.css";
 
 // Connect to your Render Socket.IO backend
-const socket = io("https://trivia-socket-server.onrender.com", {
+const socket = io("https://trivia-server-uxu3.onrender.com", {
   transports: ["websocket"],
 });
 
