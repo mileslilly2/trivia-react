@@ -4,7 +4,8 @@ import TriviaApp from "./TriviaApp";
 function App() {
   return (
     <div>
-      <TriviaApp />
+      <h1><TriviaApp /></h1>
+      <TriviaSettings />
     </div>
   );
 }
