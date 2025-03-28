@@ -48,17 +48,7 @@ export default function TriviaSettings(props) {
   const [encoding, setEncoding] = useState("default");
 
   const [questions, setQuestions] = useState([]);
-  const handleSubmit = () => {
-    const settings = {
-      amount,
-      category,
-      difficulty,
-      type,
-      encoding,
-    };
-  
-    props.onSubmit(settings); // ⬅️ assuming onSubmit was passed as a prop from App.js
-  };
+
   
 
   // Build the API URL based on user choices
