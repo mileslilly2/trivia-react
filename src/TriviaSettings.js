@@ -40,7 +40,7 @@ const ENCODINGS = [
   { value: "base64", label: "Base64 Encoding" },
 ];
 
-export default function TriviaSettings() {
+export default function TriviaSettings(props) {
   const [amount, setAmount] = useState(10);
   const [category, setCategory] = useState("any");
   const [difficulty, setDifficulty] = useState("any");
@@ -48,6 +48,18 @@ export default function TriviaSettings() {
   const [encoding, setEncoding] = useState("default");
 
   const [questions, setQuestions] = useState([]);
+  const handleSubmit = () => {
+    const settings = {
+      amount,
+      category,
+      difficulty,
+      type,
+      encoding,
+    };
+  
+    props.onSubmit(settings); // ⬅️ assuming onSubmit was passed as a prop from App.js
+  };
+  
 
   // Build the API URL based on user choices
   const buildApiUrl = () => {

@@ -1,7 +1,7 @@
-import React from "react";
+import React, { useState } from "react";
 import TriviaApp from "./TriviaApp";
 import TriviaSettings from './TriviaSettings'
-import App from './App.css'
+
 
 function App() {
   const [settings, setSettings] = useState(null); // ⬅️ settings live here

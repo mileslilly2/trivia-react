@@ -8,7 +8,8 @@ const socket = io("https://trivia-server-uxu3.onrender.com", {
   transports: ["websocket"],
 });
 
-export default function TriviaApp() {
+export default function TriviaApp(props) {
+  const settings = props.settings;
   const [name, setName] = useState("");
   const [joined, setJoined] = useState(false);
   const [players, setPlayers] = useState({});
