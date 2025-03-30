@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import TriviaApp from "./TriviaApp";
-import TriviaSettings from './TriviaSettings'
+import TriviaApp from "./pages/TriviaApp";
+import TriviaSettings from './components/TriviaSettings'
 
 
 function App() {
