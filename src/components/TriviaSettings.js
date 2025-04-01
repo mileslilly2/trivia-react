@@ -1,6 +1,6 @@
 // TriviaSettings.js
 import React, { useState } from "react";
-import './TriviaSettings.css';
+import '../styles/TriviaSettings.css';
 
 // Sample category list (IDs from https://opentdb.com/api_category.php)
 const CATEGORIES = [
@@ -90,7 +90,7 @@ export default function TriviaSettings(props) {
   };
 
   return (
-    <div class="settings-container" style={{ margin: "2rem" }}>
+    <div className="settings-container" style={{ margin: "2rem" }}>
       <h2>Trivia API Settings</h2>
 
       {/* Number of Questions */}
