@@ -1,18 +1,11 @@
-import React, { useState } from "react";
+// App.js
+import React from "react";
 import TriviaApp from "./pages/TriviaApp";
-import TriviaSettings from './components/TriviaSettings'
-
 
 function App() {
-  const [settings, setSettings] = useState(null); // ⬅️ settings live here
-
   return (
     <div className="App">
-      {!settings ? (
-        <TriviaSettings onSubmit={setSettings} />
-      ) : (
-        <TriviaApp settings={settings} />
-      )}
+      <TriviaApp />
     </div>
   );
 }

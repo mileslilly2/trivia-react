@@ -10,7 +10,7 @@ const socket = io("https://trivia-server-uxu3.onrender.com", {
 });
 
 export default function TriviaApp(props) {
-  //const settings = props.settings;
+
   console.log("TriviaApp rendered")
   const [name, setName] = useState("");
   const [joined, setJoined] = useState(false);
