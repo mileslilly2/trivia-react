@@ -1,17 +1,20 @@
-// src/TriviaApp.js
 import React, { useState, useEffect } from "react";
 import { io } from "socket.io-client";
 import RoleSelector from "./RoleSelector";
 import PlayerJoinScreen from "./PlayerJoinScreen";
+import WaitingRoom from "../components/WaitingRoom";
+import QuestionCard from "../components/QuestionCard";
+import GameOverScreen from "../components/GameOverScreen";
+import Scoreboard from "../components/Scoreboard";
 import "../styles/TriviaApp.css";
 
 const socket = io("https://trivia-server-uxu3.onrender.com", {
   transports: ["websocket"],
 });
 
-export default function TriviaApp(props) {
+export default function TriviaApp() {
+  console.log("TriviaApp rendered");
 
-  console.log("TriviaApp rendered")
   const [name, setName] = useState("");
   const [joined, setJoined] = useState(false);
   const [players, setPlayers] = useState({});
@@ -66,10 +69,9 @@ export default function TriviaApp(props) {
 
   return (
     <div className="trivia-container">
-      <h1 className="title">🎉 Kahoot-Style Trivia
-      </h1>
+      <h1 className="title">🎉 Kahoot-Style Trivia</h1>
 
-      {!role && <RoleSelector setRole={setRole} />}
+      {!role && <RoleSelector role={role} setRole={setRole} />}
 
       {role && !joined && (
         <PlayerJoinScreen
@@ -79,59 +81,23 @@ export default function TriviaApp(props) {
         />
       )}
 
-      {joined && !question && !gameOver && role === "host" && (
-        <div>
-          <p>Waiting for host to start the game...</p>
-          <button onClick={startGame}>Start Game (Host)</button>
-        </div>
+      {joined && !question && !gameOver && (
+        <WaitingRoom isHost={role === "host"} startGame={startGame} />
       )}
 
       {joined && question && !gameOver && (
-        <div className="question-box">
-          <h2
-            dangerouslySetInnerHTML={{ __html: question.question }}
-            className="question-text"
-          />
-          <div className="answer-grid">
-            {question.answers.map((answer, i) => (
-              <button
-                key={i}
-                className={`answer-btn btn-${i % 4}`}
-                onClick={() => submitAnswer(answer)}
-                dangerouslySetInnerHTML={{ __html: answer }}
-              />
-            ))}
-          </div>
-          <p>{feedback}</p>
-          {showNext && <button onClick={nextQuestion}>Next Question</button>}
-        </div>
+        <QuestionCard
+          question={question}
+          submitAnswer={submitAnswer}
+          feedback={feedback}
+          showNext={showNext}
+          nextQuestion={nextQuestion}
+        />
       )}
 
-      {gameOver && (
-        <div className="scoreboard">
-          <h2>🎉 Game Over!</h2>
-          <h3>Final Scores:</h3>
-          <ul>
-            {Object.values(players).map((p, i) => (
-              <li key={i}>
-                {p.name}: <strong>{p.score}</strong> points
-              </li>
-            ))}
-          </ul>
-          <button onClick={() => window.location.reload()}>Play Again</button>
-        </div>
-      )}
+      {gameOver && <GameOverScreen players={players} />}
 
-      <div className="score-box">
-        <h3>Players:</h3>
-        <ul>
-          {Object.values(players).map((p, i) => (
-            <li key={i}>
-              {p.name}: {p.score}
-            </li>
-          ))}
-        </ul>
-      </div>
+      <Scoreboard players={players} />
     </div>
   );
 }

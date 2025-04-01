@@ -1,10 +1,24 @@
 import React from "react";
 
-export default function WaitingRoom({ isHost, startGame }) {
+export default function QuestionCard({ question, submitAnswer, feedback, showNext, nextQuestion }) {
   return (
-    <div className="waiting-room">
-      <p>Waiting for host to start the game...</p>
-      {isHost && <button onClick={startGame}>Start Game (Host)</button>}
+    <div className="question-box">
+      <h2
+        dangerouslySetInnerHTML={{ __html: question.question }}
+        className="question-text"
+      />
+      <div className="answer-grid">
+        {question.answers.map((answer, i) => (
+          <button
+            key={i}
+            className={`answer-btn btn-${i % 4}`}
+            onClick={() => submitAnswer(answer)}
+            dangerouslySetInnerHTML={{ __html: answer }}
+          />
+        ))}
+      </div>
+      <p>{feedback}</p>
+      {showNext && <button onClick={nextQuestion}>Next Question</button>}
     </div>
   );
 }
