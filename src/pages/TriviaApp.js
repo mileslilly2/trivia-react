@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { io } from "socket.io-client";
 import RoleSelector from "./RoleSelector";
 import PlayerJoinScreen from "./PlayerJoinScreen";
-import WaitingRoom from "../components/WaitingRoom";
+import WaitingRoom from "./WaitingRoom";
 import QuestionCard from "../components/QuestionCard";
 import GameOverScreen from "../components/GameOverScreen";
 import Scoreboard from "../components/Scoreboard";
@@ -73,7 +73,7 @@ export default function TriviaApp() {
 
       {!role && <RoleSelector role={role} setRole={setRole} />}
 
-      {role && !joined && (
+      {role=="player" && !joined && (
         <PlayerJoinScreen
           name={name}
           setName={setName}
