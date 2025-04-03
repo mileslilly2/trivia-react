@@ -81,7 +81,7 @@ export default function TriviaApp() {
         />
       )}
 
-      {joined && !question && !gameOver && (
+      {role == 'host' && !question && !gameOver && (
         <WaitingRoom isHost={role === "host"} startGame={startGame} />
       )}
 
