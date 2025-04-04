@@ -1,8 +1,23 @@
 import React from "react";
+import Timer from "./Timer"; // adjust path if needed
 
-export default function QuestionCard({ question, submitAnswer, feedback, showNext, nextQuestion }) {
+export default function QuestionCard({
+  question,
+  submitAnswer,
+  feedback,
+  showNext,
+  nextQuestion,
+  onTimeUp // 👈 add this prop
+}) {
   return (
     <div className="question-box">
+      {/* ⏳ Add Timer */}
+      <Timer
+        key={question.question} // forces reset per new question
+        duration={30}           // or any duration you want
+        onTimeUp={onTimeUp}     // callback to handle timeout
+      />
+
       <h2
         dangerouslySetInnerHTML={{ __html: question.question }}
         className="question-text"
@@ -18,7 +33,7 @@ export default function QuestionCard({ question, submitAnswer, feedback, showNex
         ))}
       </div>
       <p>{feedback}</p>
-      {showNext && <button onClick={nextQuestion}>Next Question</button>}
+      {/*showNext && <button onClick={nextQuestion}>Next Question</button>*/}
     </div>
   );
 }
