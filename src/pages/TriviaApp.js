@@ -1,21 +1,16 @@
 import React, { useState, useEffect } from "react";
-import { io } from "socket.io-client";
 import RoleSelector from "./RoleSelector";
 import PlayerJoinScreen from "./PlayerJoinScreen";
 import WaitingRoom from "./WaitingRoom";
 import QuestionCard from "../components/QuestionCard";
 import GameOverScreen from "../components/GameOverScreen";
 import Scoreboard from "../components/Scoreboard";
+import socket from "./socket";
+import useSocketHandlers from "./useSocketHandlers";
 
 import "../styles/TriviaApp.css";
 
-const socket = io("https://trivia-server-uxu3.onrender.com", {
-  transports: ["websocket"],
-});
-
 export default function TriviaApp() {
-  console.log("TriviaApp rendered");
-
   const [name, setName] = useState("");
   const [joined, setJoined] = useState(false);
   const [players, setPlayers] = useState({});
@@ -26,7 +21,7 @@ export default function TriviaApp() {
   const [role, setRole] = useState(null);
   const [disableAnswers, setDisableAnswers] = useState(false);
 
-  // 🧠 Load saved state on initial mount
+  // 🧠 LocalStorage hydration
   useEffect(() => {
     const savedRole = localStorage.getItem("role");
     const savedJoined = localStorage.getItem("joined") === "true";
@@ -39,7 +34,6 @@ export default function TriviaApp() {
     if (savedQuestion) setQuestion(JSON.parse(savedQuestion));
   }, []);
 
-  // 💾 Save to localStorage when values change
   useEffect(() => {
     if (role) localStorage.setItem("role", role);
   }, [role]);
@@ -58,31 +52,17 @@ export default function TriviaApp() {
     }
   }, [question]);
 
-  useEffect(() => {
-    socket.on("players-updated", (updatedPlayers) => {
-      setPlayers(updatedPlayers);
-    });
+  // 🧠 Modularized socket handlers
+  useSocketHandlers(socket, {
+    setPlayers,
+    setQuestion,
+    setFeedback,
+    setShowNext,
+    setDisableAnswers,
+    setGameOver
+  });
 
-    socket.on("new-question", (q) => {
-      setQuestion(q);
-      setFeedback("");
-      setShowNext(false);
-      setDisableAnswers(false);
-    });
-
-    socket.on("game-over", (finalScores) => {
-      setPlayers(finalScores);
-      setGameOver(true);
-      localStorage.removeItem("question"); // Clear saved question at game end
-    });
-
-    return () => {
-      socket.off("players-updated");
-      socket.off("new-question");
-      socket.off("game-over");
-    };
-  }, []);
-
+  // 🚀 Socket emitters (UI event handlers)
   const joinGame = () => {
     if (!name.trim()) return;
     socket.emit("player-joined", name.trim());
@@ -96,22 +76,15 @@ export default function TriviaApp() {
     setDisableAnswers(true);
   };
 
-  const startGame = () => {
-    socket.emit("start-game");
-  };
+  const startGame = () => socket.emit("start-game");
 
-  const nextQuestion = () => {
-    socket.emit("next-question");
-  };
+  const nextQuestion = () => socket.emit("next-question");
 
   const handleTimeUp = () => {
     setFeedback("⏱ Time's up!");
     setShowNext(false);
     setDisableAnswers(true);
-
-    setTimeout(() => {
-      nextQuestion();
-    }, 2000);
+    setTimeout(() => nextQuestion(), 2000);
   };
 
   return (
