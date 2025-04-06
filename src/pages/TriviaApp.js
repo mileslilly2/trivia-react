@@ -100,10 +100,13 @@ export default function TriviaApp() {
           joinGame={joinGame}
         />
       )}
-
       {role === "host" && !question && !gameOver && (
-        <WaitingRoom isHost={role === "host"} startGame={startGame} />
-      )}
+  <>
+    <TriviaSettings />
+    <WaitingRoom isHost={role === "host"} startGame={startGame} />
+  </>
+)}
+
 
       {joined && question && !gameOver && (
         <QuestionCard
