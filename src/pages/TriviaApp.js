@@ -5,9 +5,8 @@ import WaitingRoom from "./WaitingRoom";
 import QuestionCard from "../components/QuestionCard";
 import GameOverScreen from "../components/GameOverScreen";
 import Scoreboard from "../components/Scoreboard";
-import socket from "./socket";
-import useSocketHandlers from "./useSocketHandlers";
-
+import useTriviaSocket from "../hooks/usesocket.js";
+import TriviaSettings from "../components/TriviaSettings";
 import "../styles/TriviaApp.css";
 
 export default function TriviaApp() {
@@ -53,15 +52,14 @@ export default function TriviaApp() {
   }, [question]);
 
   // 🧠 Modularized socket handlers
-  useSocketHandlers(socket, {
+  const socket = useTriviaSocket({
     setPlayers,
     setQuestion,
     setFeedback,
     setShowNext,
     setDisableAnswers,
-    setGameOver
+    setGameOver,
   });
-
   // 🚀 Socket emitters (UI event handlers)
   const joinGame = () => {
     if (!name.trim()) return;
