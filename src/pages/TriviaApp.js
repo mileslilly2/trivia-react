@@ -5,8 +5,9 @@ import WaitingRoom from "./WaitingRoom";
 import QuestionCard from "../components/QuestionCard";
 import GameOverScreen from "../components/GameOverScreen";
 import Scoreboard from "../components/Scoreboard";
-import socket from "./socket";
+import socket from "../hooks/socket";
 import useSocketHandlers from "./useSocketHandlers";
+import TriviaSettings from "../components/TriviaSettings";
 
 import "../styles/TriviaApp.css";
 
