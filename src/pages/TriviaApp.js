@@ -5,9 +5,14 @@ import WaitingRoom from "./WaitingRoom";
 import QuestionCard from "../components/QuestionCard";
 import GameOverScreen from "../components/GameOverScreen";
 import Scoreboard from "../components/Scoreboard";
+
 import socket from "../hooks/socket";
 import useSocketHandlers from "./useSocketHandlers";
 import TriviaSettings from "../components/TriviaSettings";
+
+import useTriviaSocket from "../hooks/usesocket.js";
+import TriviaSettings from "../components/TriviaSettings";
+import { useTriviaSocket } from "../hooks/useTriviaSocket";
 
 import "../styles/TriviaApp.css";
 
@@ -21,6 +26,11 @@ export default function TriviaApp() {
   const [gameOver, setGameOver] = useState(false);
   const [role, setRole] = useState(null);
   const [disableAnswers, setDisableAnswers] = useState(false);
+  const [questions, setQuestions] = useState([]);
+  const [currentRound, setCurrentRound] = useState(1);
+  const [totalRounds, setTotalRounds] = useState(3); // default 3 rounds
+
+
 
   // 🧠 LocalStorage hydration
   useEffect(() => {
@@ -54,15 +64,18 @@ export default function TriviaApp() {
   }, [question]);
 
   // 🧠 Modularized socket handlers
-  useSocketHandlers(socket, {
+  const socket = useTriviaSocket(
+    role,
+    name,
     setPlayers,
     setQuestion,
     setFeedback,
     setShowNext,
+    setGameOver,
     setDisableAnswers,
-    setGameOver
-  });
-
+    setCurrentRound,
+    setTotalRounds
+  );
   // 🚀 Socket emitters (UI event handlers)
   const joinGame = () => {
     if (!name.trim()) return;
@@ -92,7 +105,7 @@ export default function TriviaApp() {
     <div className="trivia-container">
       <h1 className="title">🎉 Kahoot-Style Trivia</h1>
 
-      {!role && <RoleSelector role={role} setRole={setRole} />}
+      {!<RoleSelector role={role} setRole={setRole} />}
 
       {role === "player" && !joined && (
         <PlayerJoinScreen
@@ -103,7 +116,12 @@ export default function TriviaApp() {
       )}
       {role === "host" && !question && !gameOver && (
   <>
-    <TriviaSettings />
+    <h2 className="host-title">Host Mode</h2>
+    <p className="host-instructions">
+      As the host, you can start the game and manage settings.
+      <br></br>
+      </p>
+    <TriviaSettings setQuestions={setQuestions}/>
     <WaitingRoom isHost={role === "host"} startGame={startGame} />
   </>
 )}
