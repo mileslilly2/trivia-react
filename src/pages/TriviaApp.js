@@ -5,15 +5,8 @@ import WaitingRoom from "./WaitingRoom";
 import QuestionCard from "../components/QuestionCard";
 import GameOverScreen from "../components/GameOverScreen";
 import Scoreboard from "../components/Scoreboard";
-
-import socket from "../hooks/socket";
-import useSocketHandlers from "./useSocketHandlers";
 import TriviaSettings from "../components/TriviaSettings";
-
-import useTriviaSocket from "../hooks/usesocket.js";
-import TriviaSettings from "../components/TriviaSettings";
-import { useTriviaSocket } from "../hooks/useTriviaSocket";
-
+import useTriviaSocket from "../hooks/useTrivaSocket.js";
 import "../styles/TriviaApp.css";
 
 export default function TriviaApp() {
@@ -27,8 +20,13 @@ export default function TriviaApp() {
   const [role, setRole] = useState(null);
   const [disableAnswers, setDisableAnswers] = useState(false);
   const [questions, setQuestions] = useState([]);
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  
+
   const [currentRound, setCurrentRound] = useState(1);
   const [totalRounds, setTotalRounds] = useState(3); // default 3 rounds
+  
+
 
 
 
@@ -64,7 +62,7 @@ export default function TriviaApp() {
   }, [question]);
 
   // 🧠 Modularized socket handlers
-  const socket = useTriviaSocket(
+  const socket = useTriviaSocket({
     role,
     name,
     setPlayers,
@@ -75,7 +73,7 @@ export default function TriviaApp() {
     setDisableAnswers,
     setCurrentRound,
     setTotalRounds
-  );
+});
   // 🚀 Socket emitters (UI event handlers)
   const joinGame = () => {
     if (!name.trim()) return;
@@ -90,9 +88,28 @@ export default function TriviaApp() {
     setDisableAnswers(true);
   };
 
-  const startGame = () => socket.emit("start-game");
+  const startGame = () => {
+    if (questions.length > 0) {
+      setCurrentQuestionIndex(0);
+      setQuestion(questions[0]);
+      socket.emit("start-game");
+    }
+  };
+  
 
-  const nextQuestion = () => socket.emit("next-question");
+  const nextQuestion = () => {
+    const nextIndex = currentQuestionIndex + 1;
+    if (nextIndex < questions.length) {
+      setCurrentQuestionIndex(nextIndex);
+      setQuestion(questions[nextIndex]);
+      setFeedback("");
+      setShowNext(false);
+      setDisableAnswers(false);
+    } else {
+      setGameOver(true);
+    }
+  };
+  
 
   const handleTimeUp = () => {
     setFeedback("⏱ Time's up!");
@@ -105,7 +122,7 @@ export default function TriviaApp() {
     <div className="trivia-container">
       <h1 className="title">🎉 Kahoot-Style Trivia</h1>
 
-      {!<RoleSelector role={role} setRole={setRole} />}
+      {<RoleSelector role={role} setRole={setRole} />}
 
       {role === "player" && !joined && (
         <PlayerJoinScreen
@@ -121,22 +138,25 @@ export default function TriviaApp() {
       As the host, you can start the game and manage settings.
       <br></br>
       </p>
-    <TriviaSettings setQuestions={setQuestions}/>
+      <TriviaSettings setQuestions={setQuestions} />
+
+
     <WaitingRoom isHost={role === "host"} startGame={startGame} />
   </>
 )}
 
 
       {joined && question && !gameOver && (
-        <QuestionCard
-          question={question}
-          submitAnswer={submitAnswer}
-          feedback={feedback}
-          showNext={false}
-          nextQuestion={null}
-          onTimeUp={handleTimeUp}
-          disableAnswers={disableAnswers}
-        />
+      <QuestionCard
+      question={question}
+      submitAnswer={submitAnswer}
+      feedback={feedback}
+      showNext={showNext}
+      nextQuestion={nextQuestion}
+      onTimeUp={handleTimeUp}
+      disableAnswers={disableAnswers}
+    />
+    
       )}
 
       {gameOver && <GameOverScreen players={players} />}

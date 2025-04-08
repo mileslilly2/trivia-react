@@ -6,7 +6,7 @@ const socket = io("https://trivia-server-uxu3.onrender.com", {
   transports: ["websocket"],
 });
 
-export default function usesocket({
+export default function useSocket({
   setPlayers,
   setQuestion,
   setQuestions,
@@ -31,13 +31,13 @@ export default function usesocket({
 
     socket.on("questions", (questions) => {
       setQuestions(questions);
-      setCurrentQuestionIndex?.(0); // safe call
-      setQuestion(questions[0]);     // show first question immediately
+      if (setCurrentQuestionIndex) setCurrentQuestionIndex(0); // FIXED
+      setQuestion(questions[0]);
     });
 
     socket.on("next-round", () => {
-      setCurrentRound?.((prev) => prev + 1);
-      setCurrentQuestionIndex?.(0);
+      if (setCurrentRound) setCurrentRound((prev) => prev + 1); // FIXED
+      if (setCurrentQuestionIndex) setCurrentQuestionIndex(0); // FIXED
     });
 
     socket.on("game-over", (finalScores) => {
@@ -50,10 +50,10 @@ export default function usesocket({
       setGameOver(false);
       setFeedback("");
       setShowNext(false);
-      setCurrentRound?.(1);
-      setCurrentQuestionIndex?.(0);
+      if (setCurrentRound) setCurrentRound(1); // FIXED
+      if (setCurrentQuestionIndex) setCurrentQuestionIndex(0); // FIXED
       setQuestion(null);
-      setQuestions?.([]);
+      if (setQuestions) setQuestions([]); // FIXED
     });
 
     return () => {
