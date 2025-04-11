@@ -22,6 +22,7 @@ export default function QuestionCard({
         dangerouslySetInnerHTML={{ __html: question.question }}
         className="question-text"
       />
+      {question?.answers?.length > 0 && (
       <div className="answer-grid">
         {question.answers.map((answer, i) => (
           <button
@@ -32,6 +33,8 @@ export default function QuestionCard({
           />
         ))}
       </div>
+    )}
+
       <p>{feedback}</p>
       {/*showNext && <button onClick={nextQuestion}>Next Question</button>*/}
     </div>

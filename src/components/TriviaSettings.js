@@ -83,6 +83,7 @@ export default function TriviaSettings(props) {
 
     if (data.response_code === 0) {
       props.setQuestions(data.results);
+      alert("Questions fetched successfully!");
     } else {
       alert(`API Error: response_code = ${data.response_code}`);
       props.setQuestions([]);
