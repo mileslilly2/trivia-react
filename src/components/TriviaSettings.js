@@ -30,7 +30,6 @@ const CATEGORIES = [
   { id: 31, name: "Japanese Anime & Manga" },
   { id: 32, name: "Cartoon & Animations" },
 ];
-
 const DIFFICULTIES = ["any", "easy", "medium", "hard"];
 const TYPES = ["any", "multiple", "boolean"];
 const ENCODINGS = [
@@ -40,39 +39,23 @@ const ENCODINGS = [
   { value: "base64", label: "Base64 Encoding" },
 ];
 
-export default function TriviaSettings(props) {
+export default function TriviaSettings({ setQuestions, questions }) {
   const [amount, setAmount] = useState(10);
   const [category, setCategory] = useState("any");
   const [difficulty, setDifficulty] = useState("any");
   const [type, setType] = useState("any");
   const [encoding, setEncoding] = useState("default");
 
-  const [questions, setQuestions] = useState([]);
-
-  
-
-  // Build the API URL based on user choices
   const buildApiUrl = () => {
     let url = "https://opentdb.com/api.php?";
     url += `amount=${amount}`;
-
-    if (category !== "any") {
-      url += `&category=${category}`;
-    }
-    if (difficulty !== "any") {
-      url += `&difficulty=${difficulty}`;
-    }
-    if (type !== "any") {
-      url += `&type=${type}`;
-    }
-    if (encoding !== "default") {
-      url += `&encode=${encoding}`;
-    }
-
+    if (category !== "any") url += `&category=${category}`;
+    if (difficulty !== "any") url += `&difficulty=${difficulty}`;
+    if (type !== "any") url += `&type=${type}`;
+    if (encoding !== "default") url += `&encode=${encoding}`;
     return url;
   };
 
-  // Fetch questions from Open Trivia DB
   const handleFetch = async () => {
     const url = buildApiUrl();
     console.log("Fetching from:", url);
@@ -82,11 +65,11 @@ export default function TriviaSettings(props) {
     console.log("API response:", data);
 
     if (data.response_code === 0) {
-      props.setQuestions(data.results);
+      setQuestions(data.results);
       alert("Questions fetched successfully!");
     } else {
       alert(`API Error: response_code = ${data.response_code}`);
-      props.setQuestions([]);
+      setQuestions([]);
     }
   };
 
@@ -94,7 +77,6 @@ export default function TriviaSettings(props) {
     <div className="settings-container" style={{ margin: "2rem" }}>
       <h2>Trivia API Settings</h2>
 
-      {/* Number of Questions */}
       <label>
         Number of Questions:
         <input
@@ -109,7 +91,6 @@ export default function TriviaSettings(props) {
 
       <br /><br />
 
-      {/* Category */}
       <label>
         Select Category:
         <select
@@ -127,7 +108,6 @@ export default function TriviaSettings(props) {
 
       <br /><br />
 
-      {/* Difficulty */}
       <label>
         Select Difficulty:
         <select
@@ -145,7 +125,6 @@ export default function TriviaSettings(props) {
 
       <br /><br />
 
-      {/* Type */}
       <label>
         Select Type:
         <select
@@ -163,7 +142,6 @@ export default function TriviaSettings(props) {
 
       <br /><br />
 
-      {/* Encoding */}
       <label>
         Select Encoding:
         <select
@@ -181,15 +159,14 @@ export default function TriviaSettings(props) {
 
       <br /><br />
 
-      {/* Fetch Button */}
       <button onClick={handleFetch}>Fetch Questions</button>
 
       <hr />
 
       <h3>Fetched Questions:</h3>
-      {questions.length === 0 && <p>No questions yet.</p>}
+      {(!questions || questions.length === 0) && <p>No questions yet.</p>}
 
-      {questions.length > 0 && (
+      {questions?.length > 0 && (
         <ul>
           {questions.map((q, i) => (
             <li key={i}>
@@ -204,3 +181,4 @@ export default function TriviaSettings(props) {
     </div>
   );
 }
+
