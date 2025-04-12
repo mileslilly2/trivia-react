@@ -139,7 +139,7 @@ export default function TriviaApp() {
       As the host, you can start the game and manage settings.
       <br></br>
       </p>
-      <TriviaSettings setQuestions={setQuestions} />
+      <TriviaSettings questions={questions} setQuestions={setQuestions} />
 
 
     <WaitingRoom isHost={role === "host"} startGame={startGame} />
