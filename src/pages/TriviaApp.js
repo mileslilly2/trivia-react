@@ -91,6 +91,7 @@ export default function TriviaApp() {
   const startGame = () => {
     if (questions.length > 0) {
       setCurrentQuestionIndex(0);
+      console.log("Starting game with questions:", questions);
       setQuestion(questions[0]);
       socket.emit("start-game");
     }
