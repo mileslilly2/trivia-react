@@ -173,4 +173,33 @@
       font-size: 1.5rem;
     }
   }
+  .correct-answer {
+    border: 2px solid green;
+    position: relative;
+    background-color: #eaffea;
+  }
+  
+  .correct-answer::after {
+    content: '✅';
+    position: absolute;
+    right: 8px;
+    top: 8px;
+    font-size: 1.2rem;
+    color: green;
+  }
+  
+  .wrong-answer {
+    border: 2px solid red;
+    position: relative;
+    background-color: #ffeaea;
+  }
+  
+  .wrong-answer::after {
+    content: '❌';
+    position: absolute;
+    right: 8px;
+    top: 8px;
+    font-size: 1.2rem;
+    color: red;
+  }
   
